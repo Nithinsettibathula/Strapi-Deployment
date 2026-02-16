@@ -14,6 +14,7 @@ variable "docker_image_tag" {
 resource "aws_instance" "strapi_server" {
   ami           = "ami-0c101f26f147fa7fd" 
   instance_type = "t2.micro" 
+  key_name      = "nithin-Key" # Added your key name here
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
   user_data = <<-EOF
@@ -23,10 +24,12 @@ resource "aws_instance" "strapi_server" {
               service docker start
               usermod -a -G docker ec2-user
               
+              # Wait for Docker to stabilize
               sleep 30
               
+              # Pull and run with production flag
               docker pull ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
-              docker run -d --name strapi -p 80:1337 ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
+              docker run -d --name strapi -p 80:1337 -e NODE_ENV=production ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
               EOF
 
   tags = {
@@ -35,8 +38,8 @@ resource "aws_instance" "strapi_server" {
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name        = "strapi_sg_unique_v2" # Changed name to fix your error
-  description = "Allow web traffic"
+  name        = "strapi_sg_final_v3" # Unique name to avoid duplication error
+  description = "Allow SSH and Web"
 
   ingress {
     from_port   = 22

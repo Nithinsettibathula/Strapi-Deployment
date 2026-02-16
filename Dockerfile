@@ -8,7 +8,7 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-# Set environment to production for external access
+# Set to production for public access
 ENV NODE_ENV=production
 RUN npm run build
 
