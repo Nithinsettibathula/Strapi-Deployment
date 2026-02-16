@@ -4,7 +4,6 @@ provider "aws" {
 
 variable "dockerhub_username" {
   type    = string
-  default = "nithinsettibathula" # ????? ?? ????? Docker Hub ID ?????
 }
 
 variable "docker_image_tag" {
@@ -13,20 +12,23 @@ variable "docker_image_tag" {
 }
 
 resource "aws_instance" "strapi_server" {
-  ami           = "ami-0c101f26f147fa7fd" # Amazon Linux 2 (Stable)
-  instance_type = "t2.micro"
+  ami           = "ami-0c101f26f147fa7fd" 
+  instance_type = "t2.micro" # If it fails/disconnects, change to t2.small
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
-  # ? ?????????? ?????? ???????? ???????? Docker ?? ??? ?????????
   user_data = <<-EOF
               #!/bin/bash
               yum update -y
               amazon-linux-extras install docker -y
               service docker start
               usermod -a -G docker ec2-user
-              # 1 ?????? ??? Docker ???????? ???????? ?????? ???? ?? ??? ?????????
-              sleep 60
-              docker run -d -p 80:1337 ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
+              
+              # Wait for Docker to be ready
+              sleep 30
+              
+              # Pull and run the specific tag
+              docker pull ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
+              docker run -d --name strapi -p 80:1337 ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
               EOF
 
   tags = {
@@ -47,13 +49,6 @@ resource "aws_security_group" "strapi_sg" {
   ingress {
     from_port   = 80
     to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 1337
-    to_port     = 1337
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
