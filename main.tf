@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "Nithin_Settibathula_strapi" 
+    bucket = "nithin-settibathula-strapi" 
     key    = "strapi/terraform.tfstate"
     region = "us-east-1"
   }
