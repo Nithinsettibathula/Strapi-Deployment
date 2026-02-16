@@ -14,10 +14,14 @@ variable "docker_image_tag" { default = "latest" }
 variable "dockerhub_username" { type = string }
 
 resource "aws_instance" "strapi_server" {
-  # Updated AMI for Ubuntu 22.04 in us-east-1
   ami           = "ami-053b0d53c279acc90" 
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
+
+  # Adding this ensures Terraform creates a new one if the old one is terminated
+  lifecycle {
+    replace_triggered_by = [aws_security_group.strapi_sg]
+  }
 
   user_data = <<-EOF
               #!/bin/bash
@@ -27,11 +31,11 @@ resource "aws_instance" "strapi_server" {
               sudo docker run -d -p 80:1337 ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
               EOF
 
-  tags = { Name = "Strapi-Server-Nithin" }
+  tags = { Name = "Strapi-Server-Nithin-New" }
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name = "strapi_sg_nithin"
+  name = "strapi_sg_nithin_v2" # Changed name to force a refresh
 
   ingress {
     from_port   = 22
@@ -43,6 +47,13 @@ resource "aws_security_group" "strapi_sg" {
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 1337
+    to_port     = 1337
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
