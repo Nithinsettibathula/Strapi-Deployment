@@ -14,7 +14,7 @@ variable "docker_image_tag" {
 resource "aws_instance" "strapi_server" {
   ami           = "ami-0c101f26f147fa7fd" 
   instance_type = "t2.micro" 
-  key_name      = "nithin-Key" # Added your key name here
+  # Key name removed to avoid "NotFound" errors
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
   user_data = <<-EOF
@@ -24,22 +24,20 @@ resource "aws_instance" "strapi_server" {
               service docker start
               usermod -a -G docker ec2-user
               
-              # Wait for Docker to stabilize
-              sleep 30
+              sleep 60
               
-              # Pull and run with production flag
               docker pull ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
               docker run -d --name strapi -p 80:1337 -e NODE_ENV=production ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
               EOF
 
   tags = {
-    Name = "Strapi-Server-Final"
+    Name = "Strapi-Final-Success"
   }
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name        = "strapi_sg_final_v3" # Unique name to avoid duplication error
-  description = "Allow SSH and Web"
+  name        = "strapi_sg_final_v4" 
+  description = "Allow Port 80 for Strapi"
 
   ingress {
     from_port   = 22
