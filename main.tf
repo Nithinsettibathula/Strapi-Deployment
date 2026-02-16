@@ -2,30 +2,63 @@ provider "aws" {
   region = "us-east-1"
 }
 
-variable "dockerhub_username" { type = string; default = "" }
-variable "docker_image_tag" { type = string; default = "latest" }
+variable "dockerhub_username" {
+  type    = string
+  default = ""
+}
+
+variable "docker_image_tag" {
+  type    = string
+  default = "latest"
+}
 
 resource "aws_instance" "strapi_server" {
-  # Using a standard Amazon Linux AMI for better compatibility
   ami           = "ami-0c101f26f147fa7fd" 
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
-  # This is a basic script that won't trigger a shutdown
   user_data = <<-EOF
               #!/bin/bash
               echo "Server is starting..." > /var/log/startup.log
               EOF
 
-  tags = { Name = "Strapi-Server-Final" }
+  tags = {
+    Name = "Strapi-Server-Final"
+  }
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name = "strapi_sg_final_version"
-  ingress { from_port = 22; to_port = 22; protocol = "tcp"; cidr_blocks = ["0.0.0.0/0"] }
-  ingress { from_port = 80; to_port = 80; protocol = "tcp"; cidr_blocks = ["0.0.0.0/0"] }
-  ingress { from_port = 1337; to_port = 1337; protocol = "tcp"; cidr_blocks = ["0.0.0.0/0"] }
-  egress { from_port = 0; to_port = 0; protocol = "-1"; cidr_blocks = ["0.0.0.0/0"] }
+  name = "strapi_sg_final_v5"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 1337
+    to_port     = 1337
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
-output "public_ip" { value = aws_instance.strapi_server.public_ip }
+output "public_ip" {
+  value = aws_instance.strapi_server.public_ip
+}
