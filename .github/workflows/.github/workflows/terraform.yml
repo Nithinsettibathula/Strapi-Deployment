@@ -1,6 +1,6 @@
 name: Strapi CD
 on:
-  workflow_dispatch:
+  workflow_dispatch: # This creates the button
     inputs:
       image_tag:
         description: 'Docker image tag'
