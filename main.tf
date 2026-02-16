@@ -13,7 +13,7 @@ variable "docker_image_tag" {
 
 resource "aws_instance" "strapi_server" {
   ami           = "ami-0c101f26f147fa7fd" 
-  instance_type = "t2.micro" # If it fails/disconnects, change to t2.small
+  instance_type = "t2.micro" 
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
   user_data = <<-EOF
@@ -23,21 +23,20 @@ resource "aws_instance" "strapi_server" {
               service docker start
               usermod -a -G docker ec2-user
               
-              # Wait for Docker to be ready
               sleep 30
               
-              # Pull and run the specific tag
               docker pull ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
               docker run -d --name strapi -p 80:1337 ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
               EOF
 
   tags = {
-    Name = "Strapi-Server-Automation"
+    Name = "Strapi-Server-Final"
   }
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name = "strapi_sg_final_automation"
+  name        = "strapi_sg_unique_v2" # Changed name to fix your error
+  description = "Allow web traffic"
 
   ingress {
     from_port   = 22
