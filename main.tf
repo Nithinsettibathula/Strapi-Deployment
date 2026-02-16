@@ -14,7 +14,8 @@ variable "docker_image_tag" { default = "latest" }
 variable "dockerhub_username" { type = string }
 
 resource "aws_instance" "strapi_server" {
-  ami           = "ami-0c55b159cbfafe1f0" 
+  # Updated AMI for Ubuntu 22.04 in us-east-1
+  ami           = "ami-053b0d53c279acc90" 
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
