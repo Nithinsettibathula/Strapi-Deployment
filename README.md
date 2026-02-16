@@ -1,61 +1,40 @@
-# 🚀 Getting started with Strapi
+# 🚀 Strapi Deployment Automation Project
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
-
-### `develop`
-
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
-
-```
-npm run develop
-# or
-yarn develop
-```
-
-### `start`
-
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
-
-```
-npm run start
-# or
-yarn start
-```
-
-### `build`
-
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
-
-```
-npm run build
-# or
-yarn build
-```
-
-## ⚙️ Deployment
-
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
-
-```
-yarn strapi deploy
-```
-
-## 📚 Learn more
-
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
-
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
-
-## ✨ Community
-
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+## 📝 Project Overview
+This repository contains the complete automation for deploying a **Strapi CMS** application to **AWS EC2**. I have implemented a full CI/CD lifecycle using **Terraform** for Infrastructure as Code and **GitHub Actions** for automation.
 
 ---
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+## 🏗 Architecture
+The deployment follows a professional DevOps workflow:
+1. **Source Code:** GitHub Repository
+2. **CI:** GitHub Actions builds Docker Image and pushes to **Docker Hub**.
+3. **IaC:** Terraform provisions AWS resources (EC2, Security Groups).
+4. **CD:** Terraform pulls the latest Docker image onto EC2 via `user_data`.
+
+[Image of a DevOps CI/CD pipeline architecture for AWS and Docker]
+
+---
+
+## 🛠 Features Implemented
+* **Dockerization:** Multi-stage Docker build for Strapi.
+* **Terraform State:** Used **S3 Backend** for secure state management.
+* **Automation:** * `ci.yml`: Automated builds on every push.
+    * `terraform.yml`: Manual deployment trigger (Workflow Dispatch).
+* **Security:** Configured automated AWS Security Groups for Ports 80 and 22.
+
+---
+
+## 🌐 Deployment Details
+| Resource | Details |
+| :--- | :--- |
+| **Public IP** | `98.93.194.95` |
+| **Application URL** | [http://98.93.194.95](http://98.93.194.95) |
+| **Instance Type** | `t2.micro` |
+| **Region** | `us-east-1` |
+
+---
+
+## 🚀 How I Completed This Task
+### 1. CI/CD - Code Pipeline
+Created a workflow to build the Docker image, tag it with a unique GitHub SHA, and push it to Docker Hub
