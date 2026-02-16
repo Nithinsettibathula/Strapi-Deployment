@@ -2,6 +2,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# Declare variables to satisfy the GitHub Workflow
+variable "dockerhub_username" {
+  type = string
+  default = ""
+}
+
+variable "docker_image_tag" {
+  type = string
+  default = "latest"
+}
+
 resource "aws_instance" "strapi_server" {
   ami           = "ami-0c101f26f147fa7fd" 
   instance_type = "t2.micro"
@@ -13,7 +24,7 @@ resource "aws_instance" "strapi_server" {
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name = "strapi_sg_debug_v3"
+  name = "strapi_sg_debug_v4"
 
   ingress {
     from_port   = 22
