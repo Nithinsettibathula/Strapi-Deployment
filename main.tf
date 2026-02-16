@@ -4,7 +4,7 @@ provider "aws" {
 
 variable "dockerhub_username" {
   type    = string
-  default = ""
+  default = "nithinsettibathula" # ????? ?? ????? Docker Hub ID ?????
 }
 
 variable "docker_image_tag" {
@@ -13,22 +13,29 @@ variable "docker_image_tag" {
 }
 
 resource "aws_instance" "strapi_server" {
-  ami           = "ami-0c101f26f147fa7fd" 
+  ami           = "ami-0c101f26f147fa7fd" # Amazon Linux 2 (Stable)
   instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
+  # ? ?????????? ?????? ???????? ???????? Docker ?? ??? ?????????
   user_data = <<-EOF
               #!/bin/bash
-              echo "Server is starting..." > /var/log/startup.log
+              yum update -y
+              amazon-linux-extras install docker -y
+              service docker start
+              usermod -a -G docker ec2-user
+              # 1 ?????? ??? Docker ???????? ???????? ?????? ???? ?? ??? ?????????
+              sleep 60
+              docker run -d -p 80:1337 ${var.dockerhub_username}/strapi-app:${var.docker_image_tag}
               EOF
 
   tags = {
-    Name = "Strapi-Server-Final"
+    Name = "Strapi-Server-Automation"
   }
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name = "strapi_sg_final_v5"
+  name = "strapi_sg_final_automation"
 
   ingress {
     from_port   = 22
